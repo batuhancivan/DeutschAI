@@ -851,7 +851,7 @@ playStartupVideo();
       if (!actions) { actions = document.createElement('div'); actions.className = 'account-tools'; tools.appendChild(actions); }
       const email = String(currentAccess?.username || currentUser.email || '').replace(/[&<>"']/g, '');
       actions.innerHTML = `<small id="cloudStatus" class="muted">Çevrimiçi · ${email}</small><button type="button" onclick="window.deutschaiLocalAccount.logout()">Çıkış yap</button>`;
-      if (currentAccess?.role === 'student' && page !== 'live' && page !== 'placement' && !document.querySelector('#student-return-assistant')) { const back=document.createElement('button'); back.id='student-return-assistant'; back.textContent='✦ Felkan ve günlük program'; back.onclick=()=>setPage('live'); document.body.appendChild(back); } else if(page==='live'||page==='placement') document.querySelector('#student-return-assistant')?.remove();
+      const hideAssistantShortcut = page === 'live' || page === 'placement' || page === 'profile' || page === 'zero'; if (currentAccess?.role === 'student' && !hideAssistantShortcut && !document.querySelector('#student-return-assistant')) { const back=document.createElement('button'); back.id='student-return-assistant'; back.textContent='✦ Felkan ve günlük program'; back.onclick=()=>setPage('live'); document.body.appendChild(back); } else if(hideAssistantShortcut) document.querySelector('#student-return-assistant')?.remove();
     }
   };
   async function restoreAIContentAndPlan() {

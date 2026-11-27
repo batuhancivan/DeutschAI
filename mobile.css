@@ -13,6 +13,13 @@
 #authForm[hidden],#registerForm[hidden],#authToggle,#authToggle[hidden],.auth-tabs[hidden]{display:none !important}
 .auth-card .btn{position:sticky;bottom:0}
 
+.side .theme-picker,
+.welcome-mode .side .theme-picker,
+.welcome-mode .side:hover .theme-picker,
+.welcome-mode .side:focus-within .theme-picker {
+  display: none !important;
+}
+
 @media (max-width: 820px) {
   html {
     -webkit-text-size-adjust: 100%;
@@ -81,39 +88,11 @@
 
   .side .theme-picker,
   .side:hover .theme-picker,
-  .side:focus-within .theme-picker {
-    display: flex !important;
-    align-items: center;
-    gap: 8px;
-    order: 2;
-    opacity: 1 !important;
-    visibility: visible !important;
-    max-height: none !important;
-    overflow: visible !important;
-    margin: 0 !important;
-    padding: 0 2px !important;
-    border: 0 !important;
-    background: transparent !important;
-  }
-
-  .theme-picker-label {
-    display: none;
-  }
-
-  .theme-swatches {
-    flex-wrap: nowrap;
-    gap: 6px;
-  }
-
-  .theme-mode-toggle {
-    margin-left: auto;
-    padding: 6px 8px;
-    border: 0;
-    border-radius: 999px;
-    background: #ffffff14;
-    color: #f4f7ef;
-    font-size: 11px;
-    white-space: nowrap;
+  .side:focus-within .theme-picker,
+  .welcome-mode .side .theme-picker,
+  .welcome-mode .side:hover .theme-picker,
+  .welcome-mode .side:focus-within .theme-picker {
+    display: none !important;
   }
 
   .nav {
@@ -176,11 +155,11 @@
     max-width: 100% !important;
     min-width: 0 !important;
     margin: 0 !important;
-    padding: 16px 14px calc(168px + env(safe-area-inset-bottom)) !important;
+    padding: 16px 14px calc(112px + env(safe-area-inset-bottom)) !important;
   }
 
   body.student-assistant-mode .main {
-    padding: 12px 12px calc(168px + env(safe-area-inset-bottom)) !important;
+    padding: 12px 12px calc(112px + env(safe-area-inset-bottom)) !important;
   }
 
   .top,
@@ -324,7 +303,7 @@
   #student-return-assistant {
     right: 12px;
     left: 12px;
-    bottom: calc(172px + env(safe-area-inset-bottom));
+    bottom: calc(104px + env(safe-area-inset-bottom));
     text-align: center;
   }
 
@@ -430,12 +409,12 @@
     font-size: 10px !important;
   }
 
-  .theme-swatches button {
-    width: 18px !important;
-    height: 18px !important;
-    min-width: 18px !important;
-    min-height: 18px !important;
-    flex: 0 0 18px !important;
+  .learner-settings .theme-swatch {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+    flex: 0 0 32px !important;
   }
 
   table {

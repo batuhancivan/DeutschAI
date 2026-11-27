@@ -291,6 +291,18 @@
     geminiKeyRemove: async () => {
       localStorage.removeItem(GEMINI_KEY);
       return { configured: false };
+    },
+    changePassword: async ({ current, next } = {}) => {
+      const user = await currentUser();
+      if (!user) throw new Error("Oturum açman gerekiyor.");
+      const currentPassword = String(current || "");
+      const nextPassword = String(next || "");
+      if (nextPassword.length < 8) throw new Error("Yeni şifre en az 8 karakter olmalı.");
+      if (await hashPassword(currentPassword, user.salt) !== user.passwordHash) throw new Error("Mevcut şifre hatalı.");
+      user.salt = createSalt();
+      user.passwordHash = await hashPassword(nextPassword, user.salt);
+      saveDatabase();
+      return { ok: true };
     }
   };
 })();
