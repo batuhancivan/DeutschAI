@@ -208,7 +208,7 @@ render();
 
 render();
 playStartupVideo();
-</script><div class="auth-backdrop" id="authGate"><section class="auth-card"><div class="auth-brand"><span class="auth-mark"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M11 8.5h9.5c7.2 0 11.5 4.3 11.5 11.5s-4.3 11.5-11.5 11.5H11z" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"/><path d="M11.5 16h8m-8 8h8" fill="none" stroke="#a8edff" stroke-width="2.2" stroke-linecap="round"/></svg></span><span>DeutschAI<small>ALMANCA ÖĞRENME</small></span></div><h1 id="authTitle">DeutschAI hesabın</h1><p id="authIntro" class="muted"></p><form id="authForm"><div class="field"><label for="authUsername">Kullanıcı adı</label><input id="authUsername" type="text" maxlength="254" autocomplete="username" required></div><div id="authNameRow" class="field" hidden><label for="authName">Adın</label><input id="authName" maxlength="80" autocomplete="name"></div><div class="field"><label for="authPassword">Parola</label><input id="authPassword" type="password" minlength="8" maxlength="200" autocomplete="current-password" required></div><p id="authError" class="error" role="status"></p><button id="authSubmit" class="btn" type="submit">Giriş yap</button></form><button id="authToggle" class="text-button" type="button" hidden>Yeni hesap oluştur</button><p class="muted small-copy">Hesabı ve parolayı yalnızca yönetici oluşturur. Parolanı unutursan yönetici yenileyebilir. İlerleme çevrimiçi saklanır.</p></section></div><script src="./web-bridge.js"></script><script>(() => {
+</script><div class="auth-backdrop" id="authGate"><section class="auth-card"><div class="auth-brand"><span class="auth-mark"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M11 8.5h9.5c7.2 0 11.5 4.3 11.5 11.5s-4.3 11.5-11.5 11.5H11z" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"/><path d="M11.5 16h8m-8 8h8" fill="none" stroke="#a8edff" stroke-width="2.2" stroke-linecap="round"/></svg></span><span>DeutschAI<small>ALMANCA ÖĞRENME</small></span></div><div class="auth-tabs" role="tablist"><button type="button" class="auth-tab is-active" id="authTabLogin" role="tab" aria-selected="true">Giriş yap</button><button type="button" class="auth-tab" id="authTabRegister" role="tab" aria-selected="false">Kayıt ol</button></div><h1 id="authTitle">Hesabına giriş yap</h1><p id="authIntro" class="muted">Kullanıcı adın ve parolanla devam et.</p><form id="authForm"><div class="field"><label for="authUsername">Kullanıcı adı</label><input id="authUsername" type="text" maxlength="254" autocomplete="username" required></div><div id="authNameRow" class="field" hidden><label for="authName">Adın</label><input id="authName" maxlength="80" autocomplete="name"></div><div class="field"><label for="authPassword">Parola</label><input id="authPassword" type="password" minlength="8" maxlength="200" autocomplete="current-password" required></div><button id="authSubmit" class="btn" type="submit">Giriş yap</button></form><form id="registerForm" hidden><div class="field"><label for="registerEmail">E-posta</label><input id="registerEmail" type="email" maxlength="254" autocomplete="email" required></div><div class="field"><label for="registerUsername">Kullanıcı adı</label><input id="registerUsername" type="text" minlength="3" maxlength="32" pattern="[A-Za-z0-9._-]+" autocomplete="username" required></div><div class="field"><label for="registerFirstName">İsim</label><input id="registerFirstName" type="text" minlength="2" maxlength="40" autocomplete="given-name" required></div><div class="field"><label for="registerLastName">Soyisim</label><input id="registerLastName" type="text" minlength="2" maxlength="40" autocomplete="family-name" required></div><button id="registerSubmit" class="btn" type="submit">Kayıt ol</button></form><p id="authError" class="error" role="status"></p><button id="authToggle" class="text-button" type="button" hidden>Yeni hesap oluştur</button><p id="authFoot" class="muted small-copy">İlerlemen çevrimiçi saklanır.</p></section></div><script src="./web-bridge.js"></script><script>(() => {
   const desk = window.deutschaiDesktop;
   if (!desk) return;
   const rawGet = Storage.prototype.getItem, rawSet = Storage.prototype.setItem, rawRemove = Storage.prototype.removeItem;
@@ -244,18 +244,43 @@ playStartupVideo();
     const box = document.querySelector('#authError');
     if (box) { box.textContent = message; box.style.color = isError ? '#ff9292' : '#94dfbf'; }
   }
+  function bindAuthTabs() {
+    const loginTab = document.querySelector('#authTabLogin');
+    const registerTab = document.querySelector('#authTabRegister');
+    if (!loginTab || loginTab.dataset.bound) return;
+    loginTab.dataset.bound = '1';
+    loginTab.onclick = () => setAuthMode('login');
+    registerTab.onclick = () => setAuthMode('register');
+    document.querySelector('#authForm').onsubmit = submitAuth;
+    document.querySelector('#registerForm').onsubmit = submitRegister;
+  }
+  function setAuthMode(mode) {
+    const register = mode === 'register';
+    document.querySelector('#authTabLogin').classList.toggle('is-active', !register);
+    document.querySelector('#authTabRegister').classList.toggle('is-active', register);
+    document.querySelector('#authTabLogin').setAttribute('aria-selected', String(!register));
+    document.querySelector('#authTabRegister').setAttribute('aria-selected', String(register));
+    document.querySelector('#authForm').hidden = register;
+    document.querySelector('#registerForm').hidden = !register;
+    document.querySelector('.auth-tabs').hidden = false;
+    document.querySelector('#authTitle').textContent = register ? 'Hesap oluştur' : 'Hesabına giriş yap';
+    document.querySelector('#authIntro').textContent = register ? 'E-posta, kullanıcı adı, isim ve soyisim yeterli.' : 'Kullanıcı adın ve parolanla devam et.';
+    const foot = document.querySelector('#authFoot');
+    if (foot) foot.textContent = register ? 'Kayıt olunca doğrudan öğrenmeye başlarsın.' : 'İlerlemen çevrimiçi saklanır.';
+    showAuthMessage('');
+  }
   function authPage() {
     document.body.classList.add('auth-locked');
     document.body.classList.remove('welcome-mode');
     const gate = document.querySelector('#authGate');
     gate.hidden = false;
-    document.querySelector('#authTitle').textContent = 'Hesabına giriş yap';
-    document.querySelector('#authIntro').textContent = 'Hesabını yalnızca DeutschAI yöneticisi oluşturabilir.';
     document.querySelector('#authNameRow').hidden = true;
     document.querySelector('#authName').required = false;
     document.querySelector('#authSubmit').textContent = 'Giriş yap';
     document.querySelector('#authToggle').hidden = true;
-    document.querySelector('#authForm').onsubmit = submitAuth;
+    document.querySelector('#personalGeminiKeyForm')?.setAttribute('hidden', '');
+    bindAuthTabs();
+    setAuthMode('login');
   }
   async function showGeminiKeyGate() {
     document.body.classList.add('auth-locked');
@@ -264,6 +289,8 @@ playStartupVideo();
     document.querySelector('#authTitle').textContent = 'Kendi Gemini anahtarını ekle';
     document.querySelector('#authIntro').textContent = 'AI öğretmen yetkin açık. Devam etmek için kendi Gemini API anahtarını ekle. Anahtar bu Windows cihazında şifreli saklanır; AI isteği sırasında Supabase üzerinden Google Gemini’ye iletilir.';
     document.querySelector('#authForm').hidden = true;
+    document.querySelector('#registerForm').hidden = true;
+    document.querySelector('.auth-tabs').hidden = true;
     document.querySelector('#authToggle').hidden = true;
     let form = document.querySelector('#personalGeminiKeyForm');
     if (!form) {
@@ -296,6 +323,24 @@ playStartupVideo();
       const result = await desk.supabaseLogin(input);
       if (result.user?.id) await enterCloudAccount(result.user);
     } catch (error) { showAuthMessage(error.message || 'Giriş yapılamadı.', true); }
+    finally { button.disabled = false; }
+  }
+  async function submitRegister(event) {
+    event.preventDefault();
+    const button = document.querySelector('#registerSubmit');
+    if (button.disabled) return;
+    button.disabled = true;
+    showAuthMessage('Hesap oluşturuluyor…');
+    const input = {
+      email: document.querySelector('#registerEmail').value.trim(),
+      username: document.querySelector('#registerUsername').value.trim(),
+      firstName: document.querySelector('#registerFirstName').value.trim(),
+      lastName: document.querySelector('#registerLastName').value.trim()
+    };
+    try {
+      const result = await desk.supabaseRegister(input);
+      if (result.user?.id) await enterCloudAccount(result.user);
+    } catch (error) { showAuthMessage(error.message || 'Kayıt olunamadı.', true); }
     finally { button.disabled = false; }
   }
   async function enterCloudAccount(account) {
@@ -728,32 +773,8 @@ playStartupVideo();
   async function renderAdminUsers() {
     const section = document.createElement('section');
     section.className = 'card';
-    section.innerHTML = `<h2>Hesap yönetimi</h2><p class="muted">Hesapları yalnızca yönetici oluşturabilir. Her kullanıcıya erişeceği seviyeleri ve AI yetkisini ata.</p>
-      <form id="admin-create-user" class="settings-row" style="align-items:end">
-        <label>Ad<input id="admin-user-name" required minlength="2" maxlength="80"></label>
-        <label>Kullanıcı adı<input id="admin-user-username" type="text" required minlength="3" maxlength="32" pattern="[A-Za-z0-9._-]+" autocomplete="username"></label>
-        <label>Başlangıç parolası<input id="admin-user-password" type="password" required minlength="12" autocomplete="new-password"></label>
-        <label>Rol<select id="admin-user-role"><option value="student">Öğrenci</option><option value="teacher">Öğretmen</option></select></label>
-        <div class="settings-row"><span>Seviyeler:</span>${['A1','A2','B1','B2','C1','C2'].map((level,i)=>`<label><input type="checkbox" data-create-level="${level}" ${i<2?'checked':''}> ${level}</label>`).join('')}</div>
-        <label><input id="admin-user-ai" type="checkbox"> Gemini AI yetkisi</label>
-        <button class="btn" type="submit">Hesap oluştur</button>
-      </form><p id="admin-create-status" class="muted" role="status"></p><h3>Mevcut hesaplar</h3><div id="admin-user-list" class="list">Yükleniyor…</div>`;
+    section.innerHTML = `<h2>Hesap yönetimi</h2><p class="muted">Yeni hesaplar giriş ekranındaki Kayıt ol sekmesinden açılır. Buradan mevcut hesapların seviye, rol ve parola yetkilerini yönetirsin.</p><h3>Mevcut hesaplar</h3><div id="admin-user-list" class="list">Yükleniyor…</div>`;
     document.querySelector('#view').appendChild(section);
-    section.querySelector('#admin-create-user').onsubmit = async event => {
-      event.preventDefault();
-      const status = section.querySelector('#admin-create-status'), button = event.submitter;
-      const allowedLevels = [...section.querySelectorAll('[data-create-level]:checked')].map(node => node.dataset.createLevel);
-      if (!allowedLevels.length) { status.textContent = 'En az bir seviye seç.'; return; }
-      button.disabled = true; status.textContent = 'Hesap oluşturuluyor…';
-      try {
-        const result = await desk.supabaseAdminUsers({ action: 'create', name: section.querySelector('#admin-user-name').value.trim(), username: section.querySelector('#admin-user-username').value.trim(), password: section.querySelector('#admin-user-password').value, role: section.querySelector('#admin-user-role').value, allowedLevels, canUseAi: section.querySelector('#admin-user-ai').checked });
-        status.textContent = `${result.user.username} hesabı oluşturuldu. Parolayı kullanıcıya güvenli biçimde ilet.`;
-        section.querySelector('#admin-create-user').reset();
-        section.querySelectorAll('[data-create-level]').forEach((node,i)=>node.checked=i<2);
-        await refreshAdminUsers(section);
-      } catch (error) { status.textContent = error.message || 'Hesap oluşturulamadı.'; }
-      finally { button.disabled = false; }
-    };
     await refreshAdminUsers(section);
   }
   async function refreshAdminUsers(section) {

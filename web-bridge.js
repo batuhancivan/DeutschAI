@@ -98,6 +98,53 @@
     }
   }
 
+  function registrationPassword() {
+    const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
+    const bytes = new Uint8Array(24);
+    crypto.getRandomValues(bytes);
+    return Array.from(bytes, byte => alphabet[byte % alphabet.length]).join("");
+  }
+
+  async function supabaseRegister(input = {}) {
+    const email = String(input.email || "").trim().toLowerCase();
+    const username = String(input.username || "").trim().toLowerCase();
+    const firstName = String(input.firstName || "").trim();
+    const lastName = String(input.lastName || "").trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error("Geçerli bir e-posta gir.");
+    if (!/^[a-z0-9._-]{3,32}$/.test(username)) throw new Error("Kullanıcı adı 3-32 karakter olmalı; harf, rakam, nokta, alt çizgi veya tire kullan.");
+    if (firstName.length < 2 || lastName.length < 2) throw new Error("İsim ve soyisim gir.");
+    const password = registrationPassword();
+    const fullName = `${firstName} ${lastName}`;
+    const result = await supabaseRequest("/auth/v1/signup", {
+      method: "POST",
+      body: {
+        email,
+        password,
+        data: { username, first_name: firstName, last_name: lastName, name: fullName, full_name: fullName }
+      }
+    });
+    if (!result?.access_token || !result?.user?.id) {
+      throw new Error("Hesap kaydı alındı. Girişin açılması için e-posta onayı bekleniyor.");
+    }
+    saveSupabaseSession(result);
+    try {
+      await supabaseRequest("/rest/v1/user_access?on_conflict=user_id", {
+        method: "POST",
+        token: result.access_token,
+        prefer: "resolution=merge-duplicates,return=minimal",
+        body: {
+          user_id: result.user.id,
+          username,
+          role: "student",
+          allowed_levels: ["A1", "A2"],
+          can_use_ai: false,
+          is_active: true
+        }
+      });
+    } catch {}
+    return { user: { id: result.user.id, email: result.user.email, username, name: fullName } };
+  }
+
   async function supabaseAuth(input = {}) {
     const username = String(input.username || input.email || "").trim().toLowerCase();
     const email = username.includes("@") ? username : `${username}@login.deutschai.invalid`;
@@ -125,6 +172,7 @@
     notifyStartupReady() {},
     supabaseStatus: async () => ({ configured: !!supabaseConfig(), session: await currentSupabaseSession() }),
     supabaseLogin: input => supabaseAuth(input),
+    supabaseRegister,
     supabaseAccess: async () => {
       let access = await getCurrentAccess();
       if (!access) {

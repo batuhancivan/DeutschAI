@@ -1,3 +1,8 @@
+.auth-tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:2px 0 16px;padding:4px;border:1px solid var(--line);border-radius:14px;background:color-mix(in srgb,var(--ink) 5%,var(--paper))}
+.auth-tab{border:0;border-radius:11px;padding:10px 8px;background:transparent;color:var(--muted);font-weight:750}
+.auth-tab.is-active{background:var(--green);color:#fff}
+.auth-card .field input{width:100%}
+
 @media (max-width: 820px) {
   html {
     -webkit-text-size-adjust: 100%;
