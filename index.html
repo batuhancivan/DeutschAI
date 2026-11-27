@@ -266,7 +266,7 @@ playStartupVideo();
     document.querySelector('#authTitle').textContent = register ? 'Hesap oluştur' : 'Hesabına giriş yap';
     document.querySelector('#authIntro').textContent = register ? 'E-posta, kullanıcı adı, isim, soyisim ve şifre yeterli.' : 'E-posta veya kullanıcı adın ve şifrenle devam et.';
     const foot = document.querySelector('#authFoot');
-    if (foot) foot.textContent = register ? 'Kayıt olunca doğrudan öğrenmeye başlarsın.' : 'İlerlemen çevrimiçi saklanır.';
+    if (foot) foot.textContent = 'Hesabın ve ilerlemen bu sitede, tarayıcında saklanır.';
     showAuthMessage('');
   }
   function authPage() {
@@ -911,7 +911,7 @@ playStartupVideo();
       }
       const onlineData = await desk.supabaseCurriculum();
       if (onlineData?.lessons?.length) DATA = onlineData;
-      else console.warn('Supabase dersleri henüz yayımlanmamış; uygulama içindeki başlangıç dersleri kullanılacak.');
+      else console.warn('Yerel ders içerikleri kullanılacak.');
       const remote = await desk.supabaseGetProgress();
       if (remote?.base) {
         hydratingCloud = true;
