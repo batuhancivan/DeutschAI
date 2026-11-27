@@ -98,22 +98,16 @@
     }
   }
 
-  function registrationPassword() {
-    const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789";
-    const bytes = new Uint8Array(24);
-    crypto.getRandomValues(bytes);
-    return Array.from(bytes, byte => alphabet[byte % alphabet.length]).join("");
-  }
-
   async function supabaseRegister(input = {}) {
     const email = String(input.email || "").trim().toLowerCase();
     const username = String(input.username || "").trim().toLowerCase();
     const firstName = String(input.firstName || "").trim();
     const lastName = String(input.lastName || "").trim();
+    const password = String(input.password || "");
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error("Geçerli bir e-posta gir.");
     if (!/^[a-z0-9._-]{3,32}$/.test(username)) throw new Error("Kullanıcı adı 3-32 karakter olmalı; harf, rakam, nokta, alt çizgi veya tire kullan.");
     if (firstName.length < 2 || lastName.length < 2) throw new Error("İsim ve soyisim gir.");
-    const password = registrationPassword();
+    if (password.length < 8) throw new Error("Şifre en az 8 karakter olmalı.");
     const fullName = `${firstName} ${lastName}`;
     const result = await supabaseRequest("/auth/v1/signup", {
       method: "POST",
