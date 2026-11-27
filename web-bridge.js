@@ -99,6 +99,11 @@
     throw new Error(message);
   }
 
+  function teacherBrief() {
+    try { return window.deutschaiTeacherBrief?.() || ""; }
+    catch { return ""; }
+  }
+
   async function geminiJson(input = {}) {
     const key = requireGeminiKey();
     const task = String(input.task || "lesson");
@@ -108,7 +113,7 @@
       method: "POST",
       headers: { "content-type": "application/json", "x-goog-api-key": key },
       body: JSON.stringify({
-        systemInstruction: { parts: [{ text: "Du bist Felkan, ein Deutschlehrer. Antworte nur mit einem gültigen JSON-Objekt, ohne Markdown und ohne Erklärung." }] },
+        systemInstruction: { parts: [{ text: `${teacherBrief()}\n\nYalnızca geçerli bir JSON nesnesi döndür. Markdown ve açıklama ekleme.` }] },
         contents: [{ role: "user", parts: [{ text: `Görev: ${task}\nÖğrenci profili: ${profile}\nİstek:\n${text}` }] }],
         generationConfig: { responseMimeType: "application/json", temperature: 0.4 }
       })
