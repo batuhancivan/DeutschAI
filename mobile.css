@@ -2,6 +2,7 @@
 .auth-tab{border:0;border-radius:11px;padding:10px 8px;background:transparent;color:var(--muted);font-weight:750}
 .auth-tab.is-active{background:var(--green);color:#fff}
 .auth-card .field input{width:100%}
+#authToggle[hidden]{display:none !important}
 
 @media (max-width: 820px) {
   html {

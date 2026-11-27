@@ -60,7 +60,7 @@
         signal: AbortSignal.timeout(timeout)
       });
     } catch (error) {
-      throw new Error(error?.name === "TimeoutError" ? "Supabase bağlantısı zaman aşımına uğradı." : "Supabase sunucusuna bağlanılamadı. İnternet bağlantısını kontrol et.");
+      throw new Error(error?.name === "TimeoutError" ? "Supabase bağlantısı zaman aşımına uğradı." : "Supabase sunucusuna ulaşılamadı. Proje adresi şu an bulunamıyor.");
     }
     const data = await response.json().catch(() => null);
     if (!response.ok) {
