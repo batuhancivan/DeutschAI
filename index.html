@@ -208,7 +208,7 @@ render();
 
 render();
 playStartupVideo();
-</script><div class="auth-backdrop" id="authGate"><section class="auth-card"><div class="auth-brand"><span class="auth-mark"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M11 8.5h9.5c7.2 0 11.5 4.3 11.5 11.5s-4.3 11.5-11.5 11.5H11z" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"/><path d="M11.5 16h8m-8 8h8" fill="none" stroke="#a8edff" stroke-width="2.2" stroke-linecap="round"/></svg></span><span>DeutschAI<small>ALMANCA ÖĞRENME</small></span></div><div class="auth-tabs" role="tablist"><button type="button" class="auth-tab is-active" id="authTabLogin" role="tab" aria-selected="true">Giriş yap</button><button type="button" class="auth-tab" id="authTabRegister" role="tab" aria-selected="false">Kayıt ol</button></div><h1 id="authTitle">Hesabına giriş yap</h1><p id="authIntro" class="muted">Kullanıcı adın ve parolanla devam et.</p><form id="authForm"><div class="field"><label for="authUsername">E-posta veya kullanıcı adı</label><input id="authUsername" type="text" maxlength="254" autocomplete="username" required></div><div id="authNameRow" class="field" hidden><label for="authName">Adın</label><input id="authName" maxlength="80" autocomplete="name"></div><div class="field"><label for="authPassword">Parola</label><input id="authPassword" type="password" minlength="8" maxlength="200" autocomplete="current-password" required></div><button id="authSubmit" class="btn" type="submit">Giriş yap</button></form><form id="registerForm" hidden><div class="field"><label for="registerEmail">E-posta</label><input id="registerEmail" type="email" maxlength="254" autocomplete="email" required></div><div class="field"><label for="registerUsername">Kullanıcı adı</label><input id="registerUsername" type="text" minlength="3" maxlength="32" pattern="[A-Za-z0-9._-]+" autocomplete="username" required></div><div class="field"><label for="registerFirstName">İsim</label><input id="registerFirstName" type="text" minlength="2" maxlength="40" autocomplete="given-name" required></div><div class="field"><label for="registerLastName">Soyisim</label><input id="registerLastName" type="text" minlength="2" maxlength="40" autocomplete="family-name" required></div><div class="field"><label for="registerPassword">Şifre</label><input id="registerPassword" type="password" minlength="8" maxlength="200" autocomplete="new-password" required></div><button id="registerSubmit" class="btn" type="submit">Kayıt ol</button></form><p id="authError" class="error" role="status"></p><button id="authToggle" class="text-button" type="button" hidden>Yeni hesap oluştur</button><p id="authFoot" class="muted small-copy">İlerlemen çevrimiçi saklanır.</p></section></div><script src="./web-bridge.js"></script><script>(() => {
+</script><div class="auth-backdrop" id="authGate"><section class="auth-card"><div class="auth-brand"><span class="auth-mark"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M11 8.5h9.5c7.2 0 11.5 4.3 11.5 11.5s-4.3 11.5-11.5 11.5H11z" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"/><path d="M11.5 16h8m-8 8h8" fill="none" stroke="#a8edff" stroke-width="2.2" stroke-linecap="round"/></svg></span><span>DeutschAI<small>ALMANCA ÖĞRENME</small></span></div><div class="auth-tabs" role="tablist"><button type="button" class="auth-tab is-active" id="authTabLogin" role="tab" aria-selected="true">Giriş yap</button><button type="button" class="auth-tab" id="authTabRegister" role="tab" aria-selected="false">Kayıt ol</button></div><h1 id="authTitle">Hesabına giriş yap</h1><p id="authIntro" class="muted">Kullanıcı adın ve parolanla devam et.</p><form id="authForm"><div class="field"><label for="authUsername">E-posta veya kullanıcı adı</label><input id="authUsername" type="text" maxlength="254" autocomplete="username" required></div><div id="authNameRow" class="field" hidden><label for="authName">Adın</label><input id="authName" maxlength="80" autocomplete="name"></div><div class="field"><label for="authPassword">Parola</label><input id="authPassword" type="password" minlength="8" maxlength="200" autocomplete="current-password" required></div><button id="authSubmit" class="btn" type="submit">Giriş yap</button></form><form id="registerForm" hidden><div class="field"><label for="registerEmail">E-posta</label><input id="registerEmail" type="email" maxlength="254" autocomplete="email" required></div><div class="field"><label for="registerUsername">Kullanıcı adı</label><input id="registerUsername" type="text" minlength="3" maxlength="32" pattern="[A-Za-z0-9._-]+" autocomplete="username" required></div><div class="auth-names"><div class="field"><label for="registerFirstName">İsim</label><input id="registerFirstName" type="text" minlength="2" maxlength="40" autocomplete="given-name" required></div><div class="field"><label for="registerLastName">Soyisim</label><input id="registerLastName" type="text" minlength="2" maxlength="40" autocomplete="family-name" required></div></div><div class="field"><label for="registerPassword">Şifre</label><input id="registerPassword" type="password" minlength="8" maxlength="200" autocomplete="new-password" required></div><button id="registerSubmit" class="btn" type="submit">Hesabı oluştur</button></form><p id="authError" class="error" role="status"></p><p id="authFoot" class="muted small-copy">İlerlemen çevrimiçi saklanır.</p></section></div><script src="./web-bridge.js"></script><script>(() => {
   const desk = window.deutschaiDesktop;
   if (!desk) return;
   const rawGet = Storage.prototype.getItem, rawSet = Storage.prototype.setItem, rawRemove = Storage.prototype.removeItem;
@@ -277,7 +277,6 @@ playStartupVideo();
     document.querySelector('#authNameRow').hidden = true;
     document.querySelector('#authName').required = false;
     document.querySelector('#authSubmit').textContent = 'Giriş yap';
-    document.querySelector('#authToggle').hidden = true;
     document.querySelector('#personalGeminiKeyForm')?.setAttribute('hidden', '');
     bindAuthTabs();
     setAuthMode('login');
@@ -291,12 +290,11 @@ playStartupVideo();
     document.querySelector('#authForm').hidden = true;
     document.querySelector('#registerForm').hidden = true;
     document.querySelector('.auth-tabs').hidden = true;
-    document.querySelector('#authToggle').hidden = true;
     let form = document.querySelector('#personalGeminiKeyForm');
     if (!form) {
       form = document.createElement('form'); form.id = 'personalGeminiKeyForm';
       form.innerHTML = '<div class="field"><label for="personalGeminiKey">Gemini API anahtarın</label><input id="personalGeminiKey" type="password" autocomplete="off" minlength="20" required></div><p id="personalGeminiKeyStatus" class="error" role="status"></p><button class="btn" type="submit">Güvenli şekilde kaydet ve devam et</button>';
-      document.querySelector('.auth-card').insertBefore(form, document.querySelector('#authToggle'));
+      document.querySelector('.auth-card').insertBefore(form, document.querySelector('#authFoot'));
       form.onsubmit = async event => {
         event.preventDefault();
         const input = form.querySelector('#personalGeminiKey'), button = form.querySelector('button'), status = form.querySelector('#personalGeminiKeyStatus');
@@ -928,7 +926,7 @@ playStartupVideo();
         return;
       }
       try { await restoreAIContentAndPlan(); } catch (error) { console.warn('Kişisel AI geçmişi yüklenemedi:', error?.message || error); }
-      page = currentAccess.role === 'student' ? 'live' : 'home';
+      page = 'home';
       render();
       if (page === 'home' && currentAccess.can_use_ai && dailyPack?.date !== localDate()) {
         void ensureDailyPlan().then(() => { if (page === 'home') home(); }).catch(error => console.warn('Günlük plan otomatik hazırlanamadı:', error?.message || error));
