@@ -19,6 +19,7 @@
       const saved = JSON.parse(localStorage.getItem(DB_KEY) || "null");
       if (saved?.version === 1 && Array.isArray(saved.users)) {
         database = saved;
+        ensureAdmin();
         return database;
       }
     } catch {}
@@ -31,7 +32,15 @@
       }
     } catch {}
     saveDatabase();
+    ensureAdmin();
     return database;
+  }
+
+  function ensureAdmin() {
+    if (!database?.users?.length || database.users.some(user => user.role === "admin")) return;
+    const oldest = [...database.users].sort((a, b) => String(a.createdAt || "").localeCompare(String(b.createdAt || "")))[0];
+    oldest.role = "admin";
+    saveDatabase();
   }
 
   function readSession() {
@@ -75,10 +84,17 @@
   }
 
   const GEMINI_KEY = "deutschai-gemini-key";
+  const SHARED_GEMINI_KEY = "deutschai-shared-gemini-key";
   const TEXT_MODEL = "gemini-2.5-flash";
   const LIVE_MODEL = "models/gemini-3.8-live";
 
+  function readSharedGeminiKey() {
+    return String(localStorage.getItem(SHARED_GEMINI_KEY) || "").trim();
+  }
+
   function readGeminiKey() {
+    const shared = readSharedGeminiKey();
+    if (shared.length >= 20) return shared;
     return String(localStorage.getItem(GEMINI_KEY) || "").trim();
   }
 
@@ -88,14 +104,14 @@
 
   function requireGeminiKey() {
     const key = readGeminiKey();
-    if (key.length < 20) throw new Error("Sesli öğretmen için İlerleme sayfasına kendi Gemini API anahtarını ekle. Anahtar yalnız bu tarayıcıda saklanır.");
+    if (key.length < 20) throw new Error("Yönetici henüz Gemini anahtarını eklemedi. Yönetim sayfasından bir kez kaydedilince bu tarayıcıdaki bütün hesaplar onu kullanır.");
     return key;
   }
 
   async function geminiError(response) {
     const data = await response.json().catch(() => ({}));
     const message = data?.error?.message || `Gemini yanıt vermedi (${response.status}).`;
-    if (/API key|api key|API_KEY_INVALID|permission/i.test(message)) throw new Error("Gemini API anahtarı geçersiz. İlerleme sayfasından yeni anahtarı kaydet.");
+    if (/API key|api key|API_KEY_INVALID|permission/i.test(message)) throw new Error("Gemini API anahtarı geçersiz. Yönetim sayfasından yeni anahtarı kaydet.");
     throw new Error(message);
   }
 
@@ -175,7 +191,7 @@
       name: `${firstName} ${lastName}`,
       passwordHash: await hashPassword(password, salt),
       salt,
-      role: "student",
+      role: database.users.length ? "student" : "admin",
       allowedLevels: LEVELS,
       isActive: true,
       createdAt: new Date().toISOString()
@@ -281,7 +297,21 @@
     },
     supabaseTutor: async input => geminiJson(input),
     supabaseLiveToken: async () => mintLiveToken(),
-    geminiKeyStatus: async () => ({ configured: hasGeminiKey() }),
+    geminiKeyStatus: async () => ({ configured: hasGeminiKey(), shared: readSharedGeminiKey().length >= 20 }),
+    sharedGeminiSave: async value => {
+      const actor = await currentUser();
+      if (!actor || actor.role !== "admin") throw new Error("Yönetici oturumu gerekli.");
+      const key = String(value || "").trim();
+      if (key.length < 20) throw new Error("Gemini API anahtarı eksik veya çok kısa.");
+      localStorage.setItem(SHARED_GEMINI_KEY, key);
+      return { configured: true, shared: true };
+    },
+    sharedGeminiRemove: async () => {
+      const actor = await currentUser();
+      if (!actor || actor.role !== "admin") throw new Error("Yönetici oturumu gerekli.");
+      localStorage.removeItem(SHARED_GEMINI_KEY);
+      return { configured: hasGeminiKey(), shared: false };
+    },
     geminiKeySave: async value => {
       const key = String(value || "").trim();
       if (key.length < 20) throw new Error("Gemini API anahtarı eksik veya çok kısa.");
