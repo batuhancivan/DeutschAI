@@ -302,7 +302,6 @@ playStartupVideo();
     currentUser = account;
     currentAccess = await desk.supabaseAccess();
     if (!currentAccess?.is_active) throw new Error('Hesabın etkin değil. DeutschAI yöneticisine başvur.');
-    if (currentAccess.can_use_ai && !(await desk.geminiKeyStatus()).configured) { await showGeminiKeyGate(); return; }
     rawSet.call(localStorage, 'deutschai-user-id', account.id);
     sessionStorage.setItem('deutschai-active-account', account.id);
     hydratingCloud = true;
@@ -883,7 +882,6 @@ playStartupVideo();
       currentAccess = await desk.supabaseAccess();
       window.deutschaiStudentName = String(currentAccess?.username || currentUser.email || '').split('@')[0].trim();
       if (!currentAccess?.is_active) throw new Error('Hesabın etkin değil. DeutschAI yöneticisine başvur.');
-      if (currentAccess.can_use_ai && !(await desk.geminiKeyStatus()).configured) { await showGeminiKeyGate(); return; }
       const previousId = rawGet.call(localStorage, 'deutschai-user-id') || '';
       if (previousId !== currentUser.id) {
         rawSet.call(localStorage, 'deutschai-user-id', currentUser.id);
